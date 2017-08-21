@@ -1,2 +1,5 @@
-module.exports = function(Note) {
+'use strict';
+
+module.exports = function (Note) {
+
 };

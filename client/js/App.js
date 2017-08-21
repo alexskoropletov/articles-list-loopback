@@ -120,13 +120,7 @@ var App = {
     },
     resetForms: function() {
         $('.hidden').hide();
-        $('input').each(function() {
-            $(this).val("");
-        });
-        $('textarea').each(function() {
-            $(this).val("");
-        });
-        $('select').each(function() {
+        $('input, textarea, select').each(function() {
             $(this).val("");
         });
     },
@@ -147,10 +141,12 @@ var App = {
             {
                 name: App.verticalsForm.find('input[name="name"]').val()
             },
-            function() {
+            function(data) {
+
                 App.resetForms();
                 App.showVerticals();
-            }
+            },
+            'json'
         );
     },
     noteFormSubmit: function(form) {
