@@ -128,17 +128,20 @@ var App = {
             url: '/api/' + App.getType() + '/' + id,
             type: 'DELETE',
             success: function(result) {
-                App.showVerticals();
+                App.showList();
             }
         });
     },
     /**
      * functions
      */
-    getWhere: function() {
+    getWhere: function(debug) {
         var id = App.verticalsForm.find('input[name="id"]').val();
         if (App.getType() == 'Notes') {
             id = App.notesForm.find('input[name="id"]').val();
+        }
+        if (debug) {
+            console.log({id: id});
         }
         return encodeURIComponent(JSON.stringify({id: id}));
     },
@@ -167,6 +170,9 @@ var App = {
                 data[$(this).attr('name')] = $(this).val();
             }
         });
+        console.log(type);
+        console.log(data);
+        console.log(App.getWhere(true));
         $.post(
             "/api/" + type + "/upsertWithWhere?where=" + App.getWhere(),
             data,

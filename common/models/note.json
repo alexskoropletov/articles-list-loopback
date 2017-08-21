@@ -1,5 +1,8 @@
 {
   "name": "Note",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "forceId": false,
   "properties": {
     "name": {
       "type": "string",
