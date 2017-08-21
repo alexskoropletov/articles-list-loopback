@@ -37,8 +37,10 @@ var App = {
         });
         if (App.getType() == 'vertical') {
             App.verticalsForm.show();
+            App.verticalsForm.find('input[name="name"]').focus();
         } else {
             App.notesForm.show();
+            App.notesForm.find('input[name="name"]').focus();
         }
     },
     showVerticals: function() {
