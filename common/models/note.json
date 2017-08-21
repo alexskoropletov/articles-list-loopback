@@ -1,7 +1,7 @@
 {
   "name": "Note",
   "properties": {
-    "title": {
+    "name": {
       "type": "string",
       "required": true
     },

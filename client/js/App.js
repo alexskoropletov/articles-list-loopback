@@ -32,6 +32,7 @@ var App = {
      * show content functions
      */
     showFrom: function() {
+        $(".is-invalid").removeClass('is-invalid');
         $('input[name="id"]').each(function() {
             $(this).val("");
         });
@@ -40,7 +41,15 @@ var App = {
             App.verticalsForm.find('input[name="name"]').focus();
         } else {
             App.notesForm.show();
+            App.fillVerticalsInForm();
             App.notesForm.find('input[name="name"]').focus();
+        }
+    },
+    showList: function () {
+        if (App.getType() == 'vertical') {
+            App.showVerticals();
+        } else {
+            App.showArticles();
         }
     },
     showVerticals: function() {
@@ -67,12 +76,33 @@ var App = {
     showArticles: function() {
         $.get('/api/Notes', function(data) {
             App.content.html("");
-            var ul = $('<ul class="list-group">').appendTo(App.content);
-            $(data).each(function(index, item) {
-                ul.append(
-                    $('<li class="list-group-item">').text(item.name)
-                );
-            });
+            if (data.length) {
+                var tr;
+                var table = $('<table class="table">').appendTo(App.content);
+                table.append($("<tr>"
+                    + "<th>#</th>"
+                    + "<th>Subject</th>"
+                    + "<th>Name</th>"
+                    + "<th>Description</th>"
+                    + "<th>Email</th>"
+                    + "<th>Tags</th>"
+                    + "<th>Created at</th>"
+                    + "<th>Age</th>"
+                    + "</tr>"));
+                $(data).each(function(index, item) {
+                    tr = $("<tr>");
+                    tr.append($('<th scope="row"></th>').text(item.id));
+                    tr.append($('<td>').text(item.vertical));
+                    tr.append($('<td>').text(item.name));
+                    tr.append($('<td>').text(item.content));
+                    tr.append($('<td>').text(item.email));
+                    tr.append($('<td>').text(item.tags));
+                    tr.append($('<td>').text(item.created_at));
+                    tr.append($('<td>').text(item.age));
+                    table.append(tr);
+                });
+                App.addActionButtons();
+            }
         });
     },
     addActionButtons: function() {
@@ -127,30 +157,32 @@ var App = {
     /**
      * submitting forms
      */
-    formSubmit: function(form) {
-        if (App.getType() == 'vertical') {
-            App.verticalFormSubmit(form);
-        } else {
-            App.noteFormSubmit(form);
-        }
-        return false;
-    },
-    verticalFormSubmit: function() {
+    formSubmit: function() {
+        $(".is-invalid").removeClass('is-invalid');
+        var type = App.getType();
+        var form = type == 'vertical' ? App.verticalsForm : App.notesForm;
+        var data = {};
+        form.find("select, input, textarea").each(function() {
+            if ($(this).val() && $(this).attr('name')) {
+                data[$(this).attr('name')] = $(this).val();
+            }
+        });
         $.post(
-            "/api/vertical/upsertWithWhere?where=" + App.getWhere(),
-            {
-                name: App.verticalsForm.find('input[name="name"]').val()
-            },
+            "/api/" + type + "/upsertWithWhere?where=" + App.getWhere(),
+            data,
             function(data) {
-
-                App.resetForms();
-                App.showVerticals();
+                if (data.length) {
+                    $(data).each(function() {
+                        $('input[name="' + $(this)[0].path + '"]').addClass("is-invalid");
+                    });
+                } else {
+                    App.resetForms();
+                    App.showList();
+                }
             },
             'json'
         );
-    },
-    noteFormSubmit: function(form) {
-
+        return false;
     },
     /**
      * filling forms
@@ -170,6 +202,22 @@ var App = {
         });
     },
     noteFormFill: function(id) {
-
+        $.get('/api/Notes/' + id, function(data) {
+            for (var key in data) {
+                App.notesForm.find('input[name="' + key + '"]').val(data[key]);
+                App.notesForm.find('textarea[name="' + key + '"]').val(data[key]);
+                App.notesForm.find('select[name="' + key + '"]').val(data[key]);
+            }
+        });
+    },
+    fillVerticalsInForm: function() {
+        $.get('/api/vertical', function(data) {
+            $("#subject").find('option').remove();
+            if (data.length) {
+                $(data).each(function(index, item) {
+                    $("#subject").append($('<option>').val(item.id).text(item.name));
+                });
+            }
+        });
     }
 };
