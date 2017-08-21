@@ -1,0 +1,34 @@
+{
+  "name": "Note",
+  "properties": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "content": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array"
+    },
+    "created_at": {
+      "type": "date"
+    },
+    "age": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "vertical": {
+      "type": "belongsTo",
+      "model": "vertical",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
