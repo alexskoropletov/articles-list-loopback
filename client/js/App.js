@@ -46,20 +46,22 @@ var App = {
     showVerticals: function() {
         $.get('/api/vertical', function(data) {
             App.content.html("");
-            var tr;
-            var table = $('<table class="table">').appendTo(App.content);
-            table.append($("<tr>"
-                + "<th>#</th>"
-                + "<th>Name</th>"
-                + "<th>Actions</th>"
-                + "</tr>"));
-            $(data).each(function(index, item) {
-                tr = $("<tr>");
-                tr.append($('<th scope="row"></th>').text(item.id));
-                tr.append($('<td>').text(item.name));
-                table.append(tr);
-            });
-            App.addActionButtons();
+            if (data.length) {
+                var tr;
+                var table = $('<table class="table">').appendTo(App.content);
+                table.append($("<tr>"
+                    + "<th>#</th>"
+                    + "<th>Name</th>"
+                    + "<th>Actions</th>"
+                    + "</tr>"));
+                $(data).each(function(index, item) {
+                    tr = $("<tr>");
+                    tr.append($('<th scope="row"></th>').text(item.id));
+                    tr.append($('<td>').text(item.name));
+                    table.append(tr);
+                });
+                App.addActionButtons();
+            }
         });
     },
     showArticles: function() {
@@ -93,7 +95,7 @@ var App = {
     delete: function() {
         var id = App.getId(this);
         $.ajax({
-            url: '/api/' + this.getType() + '/' + id,
+            url: '/api/' + App.getType() + '/' + id,
             type: 'DELETE',
             success: function(result) {
                 App.showVerticals();
@@ -105,7 +107,7 @@ var App = {
      */
     getWhere: function() {
         var id = App.verticalsForm.find('input[name="id"]').val();
-        if (App.getType()) {
+        if (App.getType() == 'Notes') {
             id = App.notesForm.find('input[name="id"]').val();
         }
         return encodeURIComponent(JSON.stringify({id: id}));
